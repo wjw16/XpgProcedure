@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.it.code.dao.TopDataDao">
+
+    <sql id="tablename">t_migu_top_data</sql>
+
+    <sql id="Base_Column_List">
+
+            music_id,
+
+            music_name,
+
+            music_author
+
+</sql>
+
+    <resultMap id="BaseResultMap" type="topData">
+
+        <result column="music_id" property="musicId" jdbcType="VARCHAR" />
+
+        <result column="music_name" property="musicName" jdbcType="VARCHAR" />
+
+        <result column="music_author" property="musicAuthor" jdbcType="VARCHAR" />
+
+    </resultMap>
+
+
+
+    <insert id="createTopData" useGeneratedKeys="true" keyProperty="id" parameterType="topData" >
+
+        insert into <include refid="tablename" />
+
+        (
+
+        music_id,
+
+        music_name,
+
+        music_author
+
+        )
+
+        values
+
+        (
+
+        #{musicId},
+
+        #{musicName},
+
+        #{musicAuthor}
+        )
+
+    </insert>
+
+    <insert id="createTopDataByBatch" parameterType="java.util.List" >
+
+        insert into <include refid="tablename" />
+
+        (
+
+        music_id,
+
+        music_name,
+
+        music_author
+        )
+
+        values
+
+        <foreach collection="list" item="item" index="index" separator="," >
+
+            (
+
+            #{item.musicId},
+
+            #{item.musicName},
+
+            #{item.musicAuthor}
+            )
+
+        </foreach>
+
+    </insert>
+
+  <select id="getTopDataByName" parameterType="String" resultMap="BaseResultMap">
+      select * from <include refid="tablename" />
+  </select>
+
+    <select id="getTopDataList" parameterType="java.util.Map" resultMap="BaseResultMap" >
+
+        select  <include refid="Base_Column_List" />
+
+        from
+
+        <include refid="tablename" />
+
+        <where>
+
+            <if test="musicId !=null " >
+
+                and music_id = #{musicId}
+
+            </if>
+
+            <if test="musicName != null">
+
+                and music_name like '%${musicName}%'
+
+            </if>
+
+            <if test="musicAuthor != null">
+
+                and music_author like '%${musicAuthor}%'
+
+            </if>
+
+            <if test="musicLanguage != null">
+
+                and music_language = #{musicLanguage}
+
+            </if>
+
+            <if test="musicStyle != null">
+
+                and music_style = #{musicStyle}
+
+            </if>
+
+            <if test="startDate != null">
+
+                and create_time >= '${startDate}'
+
+            </if>
+
+            <if test="endDate != null">
+
+                and '${endDate}' >= create_time
+
+            </if>
+
+        </where>
+
+    </select>
+
+
+
+    <update id="updateTopData" parameterType="topData" >
+
+        update  <include refid="tablename" />
+
+        <set>
+
+            <if test="musicStatus != null">
+
+                music_status = #{musicStatus},
+
+            </if>
+
+            <if test="customerFilePath != null">
+
+                customer_file_path = #{customerFilePath},
+
+            </if>
+
+        </set>
+
+        where  music_id = #{musicId}
+
+    </update>
+
+</mapper>

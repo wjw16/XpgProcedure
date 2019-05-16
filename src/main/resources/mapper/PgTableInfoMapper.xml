@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.it.code.dao.PgTableInfoDao">
+
+
+  <select id="getAllTableNames" parameterType="String" resultType="Map">
+      select * from pg_tables where 1=1
+      <if test="schemaname!=null">
+          and schemaname=#{schemaname}
+      </if>
+  </select>
+
+<select id="getTableColNames" parameterType="String" resultType="Map">
+ <![CDATA[
+    SELECT col_description(a.attrelid,a.attnum) as comment,pg_type.typname as typename,pg_type.typlen as typelen,a.attname as fieldname, a.attnotnull as isnotnull
+    FROM pg_class as c,pg_attribute as a inner join pg_type on pg_type.oid = a.atttypid
+where c.relname = #{tableName} and a.attrelid = c.oid and a.attnum>0
+]]>
+</select>
+<select id="getTableKey" parameterType="String" resultType="Map">
+     select pg_attribute.attname as colname,pg_type.typname as typename,pg_constraint.conname as pk_name from
+pg_constraint  inner join pg_class
+on pg_constraint.conrelid = pg_class.oid
+inner join pg_attribute on pg_attribute.attrelid = pg_class.oid
+and  pg_attribute.attnum = pg_constraint.conkey[1]
+inner join pg_type on pg_type.oid = pg_attribute.atttypid
+where pg_class.relname =#{tableName}
+and pg_constraint.contype='p'
+</select>
+<select id="getTableIndex" parameterType="String" resultType="Map">
+select A.SCHEMANAME,A.TABLENAME,A.INDEXNAME
+from
+PG_AM B left join PG_CLASS F on
+B.OID = F.RELAM left join PG_STAT_ALL_INDEXES E on
+F.OID = E.INDEXRELID left join PG_INDEX C on
+E.INDEXRELID = C.INDEXRELID left outer join PG_DESCRIPTION D on
+C.INDEXRELID = D.OBJOID,
+PG_INDEXES A
+where
+A.SCHEMANAME = E.SCHEMANAME
+and A.TABLENAME = E.RELNAME
+and A.INDEXNAME = E.INDEXRELNAME
+and E.RELNAME = #{tableName};
+
+</select>
+</mapper>

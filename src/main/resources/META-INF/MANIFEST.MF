@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Class-Path: libs/postgresql-9.4.1212.jar libs/mysql-connector-java-5.1
+ .26.jar libs/mybatis-3.2.3.jar config/*
+Main-Class: com.it.code.application.OpMainForm
+
